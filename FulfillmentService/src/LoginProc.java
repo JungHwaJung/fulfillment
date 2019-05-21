@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +48,7 @@ public class LoginProc extends HttpServlet {
 		OrderCompanyDTO oDto = null;
 		ProductDAO pDao = null;
 		int alertCount = 0;
+
 		
 		switch(action) {
 
@@ -55,11 +57,35 @@ public class LoginProc extends HttpServlet {
 			LOG.trace("Login start");
 			if (!request.getParameter("id").equals(""))
 				id = request.getParameter("id");
-			password = request.getParameter("password");		
-
+			password = request.getParameter("password");
+	
 			/* 관리자 로그인하는 부분 */
 			if (id.equals("admin") && password.equals("admin")) {
 				session.setAttribute("id", id);
+				session.setAttribute("password", password);
+				
+				/* 쿠키 
+				String save = request.getParameter("save");
+				id = request.getParameter("id");
+				
+				if(save != null) {	//아이디 저장을 눌렀다면
+					Cookie cookie = new Cookie("id", id);	//id는 key값, password는 value값
+					cookie.setMaxAge(60*10);	//10분간 유효
+					response.addCookie(cookie);
+					LOG.trace("쿠키생성 완료");
+				}
+				
+				Cookie[] cookies = request.getCookies();
+				if(cookies != null) {
+					for(Cookie cookie: cookies) {
+						if(cookie.getName().equals("id")) {
+							id = cookie.getValue();
+							break;	//원하는 데이터 찾으면 반복문 종료
+						}
+					}
+				}
+				*/
+				
 				pDao = new ProductDAO();
 				alertCount = pDao.selectProductCount();
 				session.setAttribute("alertCount", alertCount);
@@ -85,6 +111,8 @@ public class LoginProc extends HttpServlet {
 				LOG.trace("관리자 성공 - 아이디 오류");	
 				break;
 			}
+			
+			
 			
 			// id 범위가 50000에서 70000 사이인 경우 운송회사 아이디
 			if (Integer.parseInt(id) > 50000 && Integer.parseInt(id) < 70001) {

@@ -21,7 +21,7 @@
 			<label class="label-control">
 				아이디<span class="label-text"></span>
 			</label>
-			<input type="text" name="id" class="form-control" />
+			<input type="text" name="id" class="form-control" value="${id}"/>
 		</div>
 		<div class="form-group">
 			<label class="label-control">
